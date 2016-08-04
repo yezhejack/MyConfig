@@ -18,6 +18,8 @@ let g:mapleader = ","
 
 " Fast saving
 nmap <leader>w :w!<cr>
+" Show number of line
+set number
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
