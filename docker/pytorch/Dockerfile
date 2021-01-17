@@ -9,7 +9,7 @@ FROM nvidia/cuda:10.2-devel-ubuntu18.04
 
 RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificates \
     libglib2.0-0 libxext6 libsm6 libxrender1 \
-    git mercurial subversion sudo openssh-server htop vim locales sed screen && apt-get clean
+    git mercurial subversion sudo openssh-server htop vim locales sed screen zsh && apt-get clean
 
 # Setup ssh
 #RUN apt-get update && apt-get install -y openssh-server htop vim locales && apt-get clean
@@ -33,7 +33,7 @@ ENV LC_ALL en_US.UTF-8
 RUN echo "export LANG=en_US.UTF-8" >> ~/.bashrc && echo "export LANGUAGE=en_US.UTF-8" >> ~/.bashrc && echo "export LC_ALL=en_US.UTF-8" >> ~/.bashrc
 
 # Setup User
-RUN useradd -u 1011 -ms /bin/bash zheye
+RUN useradd -u 1011 -ms /bin/zsh zheye
 RUN usermod -aG sudo zheye
 RUN mkdir /home/zheye/.ssh
 RUN cp /root/.ssh/authorized_keys /home/zheye/.ssh/authorized_keys
@@ -45,9 +45,13 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 RUN wget --quiet https://github.com/yezhejack/MyConfig/raw/master/screenrc -O ~/.screenrc
 
+RUN sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
 RUN wget --quiet https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh -O ~/anaconda.sh && \
     /bin/bash ~/anaconda.sh -b -p /home/zheye/anaconda3 && \
     rm ~/anaconda.sh && \
+    echo ". /home/zheye/anaconda3/etc/profile.d/conda.sh" >> ~/.zshrc && \
+    echo "conda activate base" >> ~/.zshrc && \
     echo ". /home/zheye/anaconda3/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 
@@ -55,5 +59,7 @@ RUN conda install pytorch torchvision cudatoolkit=10.2 -c pytorch && conda clean
 RUN pip install progressbar2
 
 RUN echo "export LANG=en_US.UTF-8" >> ~/.bashrc && echo "export LANGUAGE=en_US.UTF-8" >> ~/.bashrc && echo "export LC_ALL=en_US.UTF-8" >> ~/.bashrc
+RUN echo "export LANG=en_US.UTF-8" >> ~/.zshrc && echo "export LANGUAGE=en_US.UTF-8" >> ~/.zshrc && echo "export LC_ALL=en_US.UTF-8" >> ~/.zshrc
+
 USER root
 WORKDIR /root
